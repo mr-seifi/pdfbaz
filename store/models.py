@@ -431,8 +431,10 @@ class Book(models.Model):
     edition = models.CharField(max_length=100)
     publisher = models.ManyToManyField(Publisher, null=True)
     pages = models.IntegerField(null=True)
-    language = models.CharField(choices=Languages.choices)
-    topic = models.CharField(choices=Topics.choices)
+    language = models.CharField(max_length=50,
+                                choices=Languages.choices)
+    topic = models.CharField(max_length=100,
+                             choices=Topics.choices)
     cover = models.ImageField(upload_to='covers',
                               null=True)
     identifier = models.CharField(max_length=300)
