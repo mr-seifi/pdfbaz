@@ -432,10 +432,10 @@ class Book(models.Model):
     description = models.TextField(null=True)
     series = models.CharField(max_length=300,
                               null=True)
-    author = models.ManyToManyField(Author, null=True)
+    author = models.ManyToManyField(Author)
     year = models.DateTimeField(null=True)
     edition = models.CharField(max_length=100)
-    publisher = models.ManyToManyField(Publisher, null=True)
+    publisher = models.ManyToManyField(Publisher)
     pages = models.IntegerField(null=True)
     language = models.CharField(max_length=50,
                                 choices=Languages.choices)
