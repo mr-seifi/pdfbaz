@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Author(models.Model):
@@ -433,30 +434,27 @@ class Book(models.Model):
         LINGUISTICS_RUSSIAN_LANGUAGE = 'LINGUISTICS:RUSSIAN_LANGUAGE', 'Linguistics:Russian_Language'
         LINGUISTICS_DICTIONARIES = 'LINGUISTICS:DICTIONARIES', 'Linguistics:Dictionaries'
         LINGUISTICS_STYLISTICS = 'LINGUISTICS:STYLISTICS', 'Linguistics:Stylistics'
+        OTHERS = 'OTHERS', 'Others'
+
+    class Extensions(models.TextChoices):
+        PDF = 'pdf', 'PDF'
+        EPUB = 'epub', 'EPUB'
 
     title = models.CharField(max_length=2000)
-    slug = models.SlugField(max_length=2000,
-                            unique='identifier',
-                            null=True)
-    description = models.TextField(null=True)
-    series = models.CharField(max_length=300,
-                              null=True)
-    author = models.ManyToManyField(Author,
-                                    related_name='published_books')
-    year = models.DateTimeField(null=True)
-    edition = models.CharField(max_length=100)
-    publisher = models.ManyToManyField(Publisher,
-                                       related_name='published_books')
-    pages = models.IntegerField(null=True)
-    language = models.CharField(max_length=50,
-                                choices=Languages.choices)
-    topic = models.CharField(max_length=100,
-                             choices=Topics.choices)
-    cover = models.ImageField(upload_to='covers',
-                              null=True)
-    identifier = models.CharField(max_length=300)
-    filesize = models.IntegerField()
-    extension = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=2000, unique='identifier', null=True)
+    description = models.TextField(null=True, blank=True)
+    series = models.CharField(max_length=300, null=True, blank=True)
+    author = models.ManyToManyField(Author, related_name='published_books')
+    year = models.IntegerField(null=True, validators=[MinValueValidator(1800), MaxValueValidator(2100)], blank=True)
+    edition = models.CharField(max_length=100, blank=True)
+    publisher = models.ManyToManyField(Publisher, related_name='published_books')
+    pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
+    language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
+    topic = models.CharField(max_length=100, choices=Topics.choices, default=Topics.OTHERS)
+    cover = models.ImageField(upload_to='covers', null=True, blank=True)
+    identifier = models.CharField(max_length=300, blank=True)
+    filesize = models.IntegerField(validators=[MinValueValidator(0)])
+    extension = models.CharField(max_length=50, choices=Extensions.choices, default=Extensions.PDF)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
