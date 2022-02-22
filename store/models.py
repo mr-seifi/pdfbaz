@@ -429,13 +429,18 @@ class Book(models.Model):
         LINGUISTICS_STYLISTICS = 'LINGUISTICS:STYLISTICS', 'Linguistics:Stylistics'
 
     title = models.CharField(max_length=2000)
+    slug = models.SlugField(max_length=2000,
+                            unique='identifier',
+                            null=True)
     description = models.TextField(null=True)
     series = models.CharField(max_length=300,
                               null=True)
-    author = models.ManyToManyField(Author)
+    author = models.ManyToManyField(Author,
+                                    related_name='published_books')
     year = models.DateTimeField(null=True)
     edition = models.CharField(max_length=100)
-    publisher = models.ManyToManyField(Publisher)
+    publisher = models.ManyToManyField(Publisher,
+                                       related_name='published_books')
     pages = models.IntegerField(null=True)
     language = models.CharField(max_length=50,
                                 choices=Languages.choices)
