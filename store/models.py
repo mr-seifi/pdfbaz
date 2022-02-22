@@ -442,6 +442,10 @@ class Book(models.Model):
 
     title = models.CharField(max_length=2000)
     slug = models.SlugField(max_length=2000, unique='identifier', null=True)
+
+    def cover_url(self):
+        return self.slug
+
     description = models.TextField(null=True, blank=True)
     series = models.CharField(max_length=300, null=True, blank=True)
     author = models.ManyToManyField(Author, related_name='published_books')
@@ -451,7 +455,7 @@ class Book(models.Model):
     pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
     topic = models.CharField(max_length=100, choices=Topics.choices, default=Topics.OTHERS)
-    cover = models.ImageField(upload_to='covers', null=True, blank=True)
+    cover = models.ImageField(upload_to='covers', name=slug, null=True, blank=True)  # TODO: name of cover = slug
     identifier = models.CharField(max_length=300, blank=True)
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
     extension = models.CharField(max_length=50, choices=Extensions.choices, default=Extensions.PDF)
