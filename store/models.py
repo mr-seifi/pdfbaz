@@ -5,6 +5,9 @@ class Author(models.Model):
     name = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ('-name', )
+
     def __str__(self):
         return self.name
 
@@ -12,6 +15,9 @@ class Author(models.Model):
 class Publisher(models.Model):
     name = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-name', )
 
     def __str__(self):
         return self.name
@@ -453,6 +459,9 @@ class Book(models.Model):
     extension = models.CharField(max_length=50)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created', )
 
     def __str__(self):
         return self.title
