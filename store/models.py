@@ -1,5 +1,9 @@
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+from pdfbaz.util import unique_slug_generator
 
 
 class Author(models.Model):
@@ -7,7 +11,7 @@ class Author(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-name', )
+        ordering = ('-name',)
 
     def __str__(self):
         return self.name
@@ -18,14 +22,13 @@ class Publisher(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-name', )
+        ordering = ('-name',)
 
     def __str__(self):
         return self.name
 
 
 class Book(models.Model):
-
     class Languages(models.TextChoices):
         ENGLISH = 'en', 'English'
         RUSSIAN = 'ru', 'Russian'
@@ -117,7 +120,7 @@ class Book(models.Model):
         COMPUTERS_WEB_DESIGN = 'COMPUTERS:WEB_DESIGN', 'Computers:Web_design'
         COMPUTERS_ALGORITHMS_AND_DATA_STRUCTURES = 'COMPUTERS:ALGORITHMS_AND_DATA_STRUCTURES', \
                                                    'Computers:Algorithms_and_Data_Structures'
-        COMPUTERS_ALGORITHMS_AND_DATA_STRUCTURES_CRYPTOGRAPHY = 'COMPUTERS:ALGORITHMS_AND_DATA_STRUCTURES:CRYPTOGRAPHY',\
+        COMPUTERS_ALGORITHMS_AND_DATA_STRUCTURES_CRYPTOGRAPHY = 'COMPUTERS:ALGORITHMS_AND_DATA_STRUCTURES:CRYPTOGRAPHY', \
                                                                 'Computers:Algorithms_and_Data_Structures:Cryptography'
         COMPUTERS_ALGORITHMS_AND_DATA_STRUCTURES_IMAGE_PROCESSING = 'COMPUTERS:ALGORITHMS_AND_DATA_STRUCTURES:IMAGE_PROCESSING', \
                                                                     'Computers:Algorithms_and_Data_Structures:Image_Processing'
@@ -441,11 +444,7 @@ class Book(models.Model):
         EPUB = 'epub', 'EPUB'
 
     title = models.CharField(max_length=2000)
-    slug = models.SlugField(max_length=2000, unique='identifier', null=True)
-
-    def cover_url(self):
-        return self.slug
-
+    slug = models.SlugField(max_length=2000, unique='identifier', null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     series = models.CharField(max_length=300, null=True, blank=True)
     author = models.ManyToManyField(Author, related_name='published_books')
@@ -455,7 +454,7 @@ class Book(models.Model):
     pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
     topic = models.CharField(max_length=100, choices=Topics.choices, default=Topics.OTHERS)
-    cover = models.ImageField(upload_to='covers', name=slug, null=True, blank=True)  # TODO: name of cover = slug
+    cover = models.ImageField(upload_to='covers', null=True, blank=True)
     identifier = models.CharField(max_length=300, blank=True)
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
     extension = models.CharField(max_length=50, choices=Extensions.choices, default=Extensions.PDF)
@@ -463,7 +462,16 @@ class Book(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ('-created', )
+        ordering = ('-created',)
 
     def __str__(self):
         return self.title
+
+
+@receiver(pre_save, sender=Book)
+def pre_save_receiver(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = unique_slug_generator(instance)
+    if instance.cover:
+        cover_extension = instance.cover.name.split('.')[-1]
+        instance.cover.name = f'{instance.slug}.{cover_extension}'
