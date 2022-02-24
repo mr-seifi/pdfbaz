@@ -1,9 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-
-from pdfbaz.util import unique_slug_generator
+from django.utils.text import slugify
 
 
 class Author(models.Model):
@@ -467,11 +464,9 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
-
-@receiver(pre_save, sender=Book)
-def pre_save_receiver(sender, instance, *args, **kwargs):
-    if not instance.slug:
-        instance.slug = unique_slug_generator(instance)
-    if instance.cover:
-        cover_extension = instance.cover.name.split('.')[-1]
-        instance.cover.name = f'{instance.slug}.{cover_extension}'
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        if self.cover:
+            cover_extension = self.cover.name.split('.')[-1]
+            self.cover.name = f'{self.slug}.{cover_extension}'
+        super(Book, self).save(*args, **kwargs)
