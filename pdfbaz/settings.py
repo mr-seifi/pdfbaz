@@ -130,4 +130,9 @@ LOGIN_URL = 'account:login'
 LOGOUT_URL = 'account:logout'
 
 # SMTP Protocol
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'info.pdfbaz@gmail.com'
+EMAIL_HOST_PASSWORD = 'PdF12321BAz#'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
