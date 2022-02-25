@@ -9,6 +9,8 @@ from . import views
 app_name = 'api'
 
 router = DefaultRouter()
+router.register(r'author', views.AuthorViewSet)
+router.register(r'publisher', views.PublisherViewSet)
 router.register(r'book', views.BookViewSet)
 
 schema_view = get_schema_view(

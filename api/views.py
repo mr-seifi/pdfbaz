@@ -1,11 +1,13 @@
 from django.contrib.auth.models import User
-from rest_framework import generics
-from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics, viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from store.models import Book
-from .serializers import BookSerializer, MyTokenObtainPairSerializer, RegisterSerializer
+from store.models import Author, Publisher, Book
+from .serializers import AuthorSerializer, PublisherSerializer, BookSerializer, \
+    MyTokenObtainPairSerializer, RegisterSerializer
 
 
 class MyObtainTokenPairView(TokenObtainPairView):
@@ -19,7 +21,26 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (AllowAny, )
 
 
+class AuthorViewSet(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
+    permission_classes = [IsAuthenticated]
+
+
+class PublisherViewSet(viewsets.ModelViewSet):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
+    permission_classes = [IsAuthenticated]
+
+
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['year', 'language', 'topic']
+    search_fields = ['title', 'description', 'author__name', 'publisher__name']
     permission_classes = [IsAuthenticated]

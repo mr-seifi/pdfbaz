@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from store.models import Book
+from store.models import Author, Publisher, Book
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -51,6 +51,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['name', 'created']
+
+
+class PublisherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Publisher
+        fields = ['name', 'created']
 
 
 class BookSerializer(serializers.ModelSerializer):
