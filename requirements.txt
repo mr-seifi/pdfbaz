@@ -35,6 +35,7 @@ pickleshare==0.7.5
 Pillow==9.0.1
 platformdirs==2.5.1
 prompt-toolkit==3.0.28
+psycopg2-binary==2.9.3
 ptyprocess==0.7.0
 pure-eval==0.2.2
 Pygments==2.11.2
@@ -54,4 +55,5 @@ traitlets==5.1.1
 typing-extensions==4.1.1
 uritemplate==4.1.1
 urllib3==1.26.8
+uWSGI==2.0.20
 wcwidth==0.2.5
