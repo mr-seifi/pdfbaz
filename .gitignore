@@ -4,3 +4,4 @@ venv
 **/*.sqlite3
 **/migrations
 covers
+**/__pycache__

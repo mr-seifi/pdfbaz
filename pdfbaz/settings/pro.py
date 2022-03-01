@@ -10,9 +10,9 @@ ALLOWED_HOSTS = ['*']
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'pdfbaz_db',
-        'USER': 'pdfbaz_usr',
+        'USER': 'postgres',
         'PASSWORD': 'PdF12321BAz#'
     }
 }
