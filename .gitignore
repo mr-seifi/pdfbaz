@@ -6,3 +6,5 @@ venv
 covers
 **/__pycache__
 logs
+static
+media
