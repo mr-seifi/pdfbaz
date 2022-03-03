@@ -5,7 +5,7 @@ ADMINS = (
     ('Admin', 'info.pdfbaz@gmail.com')
 )
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['pdfbaz.com', 'www.pdfbaz.com']
 
 DATABASES = {
     'default': {
