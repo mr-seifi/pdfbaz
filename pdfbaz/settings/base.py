@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'store.apps.StoreConfig',
     'rest_framework',
-    'api.apps.ApiConfig'
+    'api.apps.ApiConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
