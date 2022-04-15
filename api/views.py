@@ -3,12 +3,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from account.services import google_validate_id_token
 from store.models import Author, Publisher, Book
-from .mixins import ApiErrorsMixin, PublicApiMixin
 from .serializers import AuthorSerializer, PublisherSerializer, BookSerializer, \
     MyTokenObtainPairSerializer, RegisterSerializer
 
@@ -47,13 +44,3 @@ class BookViewSet(viewsets.ModelViewSet):
     filterset_fields = ['year', 'language', 'topic']
     search_fields = ['title', 'description', 'author__name', 'publisher__name']
     permission_classes = [IsAuthenticated]
-
-
-class UserInitApi(PublicApiMixin,
-                  ApiErrorsMixin,
-                  APIView):
-
-    def post(self, request, *args, **kwargs):
-        id_token = request.headers.get('Authorization')
-        google_validate_id_token(id_token=id_token)
-

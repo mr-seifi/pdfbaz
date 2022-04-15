@@ -25,6 +25,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,14 +41,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'api.apps.ApiConfig',
     'social_django',
-    'django_extensions',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,9 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pdfbaz.wsgi.application'
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3030',
-]
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -96,6 +91,7 @@ DATABASES = {
         'NAME': f'{BASE_DIR}/db.sqlite3',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -115,6 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -125,6 +122,7 @@ TIME_ZONE = 'Asia/Tehran'
 USE_I18N = True
 
 USE_TZ = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -149,7 +147,3 @@ EMAIL_HOST_USER = 'info.pdfbaz@gmail.com'
 EMAIL_HOST_PASSWORD = 'PdF12321BAz#'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
-AUTHENTICATION_BACKENDS = 'social_core.backends.google.GoogleOAuth2'
-GOOGLE_OAUTH2_KEY = '262651695281-qjluhvvp9c3tot3n0ndv9k1pshp7l0uk.apps.googleusercontent.com'
-GOOGLE_OAUTH2_SECRET = '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'

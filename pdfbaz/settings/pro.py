@@ -1,9 +1,8 @@
-from .base import *
 DEBUG = False
 
-ADMINS = (
+ADMINS = [
     ('Admin', 'info.pdfbaz@gmail.com')
-)
+]
 
 ALLOWED_HOSTS = ['pdfbaz.com', 'www.pdfbaz.com']
 
