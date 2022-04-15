@@ -1,4 +1,5 @@
-DEBUG = False
+from .base import *
+DEBUG = True
 
 ADMINS = [
     ('Admin', 'info.pdfbaz@gmail.com')
