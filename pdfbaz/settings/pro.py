@@ -1,4 +1,4 @@
-DEBUG = False
+DEBUG = True
 
 ADMINS = [
     ('Admin', 'info.pdfbaz@gmail.com')
