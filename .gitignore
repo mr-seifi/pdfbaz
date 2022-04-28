@@ -8,3 +8,4 @@ covers
 logs
 static
 media
+/secret.py

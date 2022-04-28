@@ -4,22 +4,26 @@ from django.utils.text import slugify
 
 
 class Author(models.Model):
-    name = models.CharField(max_length=250)
+    name = models.CharField(unique=True, max_length=250)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-name',)
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
     def __str__(self):
         return self.name
 
 
 class Publisher(models.Model):
-    name = models.CharField(max_length=250)
+    name = models.CharField(unique=True, max_length=250)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-name',)
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
     def __str__(self):
         return self.name
@@ -439,30 +443,50 @@ class Book(models.Model):
     class Extensions(models.TextChoices):
         PDF = 'pdf', 'PDF'
         EPUB = 'epub', 'EPUB'
+        DJVU = 'djvu', 'DJVU'
 
+    libgen_id = models.IntegerField(unique=True, default=-1)
     title = models.CharField(max_length=2000)
     slug = models.SlugField(max_length=2000, unique='identifier', null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     series = models.CharField(max_length=300, null=True, blank=True)
-    author = models.ManyToManyField(Author, related_name='published_books')
+    authors = models.ManyToManyField(Author, related_name='published_books')
     year = models.IntegerField(null=True, validators=[MinValueValidator(1800), MaxValueValidator(2100)], blank=True)
     edition = models.CharField(max_length=100, blank=True)
-    publisher = models.ManyToManyField(Publisher, related_name='published_books')
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='published_books',
+                                  null=True, blank=True)
     pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
     topic = models.CharField(max_length=100, choices=Topics.choices, default=Topics.OTHERS)
+    cover_url = models.CharField(max_length=300, null=True, blank=True)
     cover = models.ImageField(upload_to='covers', null=True, blank=True)
     identifier = models.CharField(max_length=300, blank=True)
+    md5 = models.CharField(max_length=300, blank=True)
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
     extension = models.CharField(max_length=50, choices=Extensions.choices, default=Extensions.PDF)
+    download_url = models.CharField(max_length=1000, blank=True, null=True)
+    file = models.FileField(blank=True, null=True)
+    price = models.IntegerField(default=149000)
+    discount = models.IntegerField(default=15)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ('-created',)
+        indexes = [
+            models.Index(fields=['libgen_id']),
+            models.Index(fields=['title']),
+            models.Index(fields=['language']),
+            models.Index(fields=['extension']),
+            models.Index(fields=['cover']),
+            models.Index(fields=['filesize']),
+        ]
 
     def __str__(self):
         return self.title
+
+    @property
+    def after_price(self):
+        return self.price * (100 - self.discount) * 0.01
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
