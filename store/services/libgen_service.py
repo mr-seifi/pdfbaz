@@ -66,7 +66,7 @@ class LibgenService:
         return book
 
     @staticmethod
-    def _get_description_online(book: dict, session: requests.Session):
+    def _get_description_online(book: dict, session: requests.Session, retries=5, cnt=0):
         base_url = 'http://library.lol/main/'
 
         if not book.get("md5"):
@@ -76,14 +76,19 @@ class LibgenService:
         response = session.get(url)
 
         if response.status_code != 200:
-            return
+            if cnt >= retries:
+                return
+
+            return LibgenService._get_description_online(book=book,
+                                                         session=session,
+                                                         cnt=cnt+1)
 
         soup = BeautifulSoup(response.text, 'html.parser')
         if result := re.findall(r'<div>Description:<br\/>(.+)<\/div>', str(soup)):
             return result[0]
 
     @staticmethod
-    def _get_book_link_online(book: dict, session: requests.Session):
+    def _get_book_link_online(book: dict, session: requests.Session, retries=5, cnt=0):
         base_url = 'http://library.lol/main/'
 
         if not book.get("md5"):
@@ -93,7 +98,12 @@ class LibgenService:
         response = session.get(url)
 
         if response.status_code != 200:
-            return
+            if cnt >= retries:
+                return
+
+            return LibgenService._get_description_online(book=book,
+                                                         session=session,
+                                                         cnt=cnt + 1)
 
         soup = BeautifulSoup(response.text, 'html.parser')
         if result := re.findall(r'<a href="(.+)">GET<\/a>', str(soup)):

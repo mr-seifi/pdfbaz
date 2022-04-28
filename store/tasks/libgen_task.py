@@ -41,10 +41,10 @@ def _add_book(book: dict):
         print(f'[-] {ex}')
 
 
-def add_books_to_database():
+def add_books_to_database(limit=5000, offset=0):
     libgen_service = LibgenService()
 
-    for batch in libgen_service.read_book_from_mysql(limit=5000):
+    for batch in libgen_service.read_book_from_mysql(limit=limit, offset=offset):
         print('[+] Assign process started!')
         libgen_service.assign_more_information(batch)
         print('[+] Assigned successfully!')
