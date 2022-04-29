@@ -7,9 +7,13 @@ class Author(models.Model):
     name = models.CharField(unique=True, max_length=250)
     created = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def slug(self):
+        return slugify(self.name)
+
     class Meta:
         indexes = [
-            models.Index(fields=['name'])
+            models.Index(fields=['name']),
         ]
 
     def __str__(self):
@@ -20,9 +24,13 @@ class Publisher(models.Model):
     name = models.CharField(unique=True, max_length=250)
     created = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def slug(self):
+        return slugify(self.name)
+
     class Meta:
         indexes = [
-            models.Index(fields=['name'])
+            models.Index(fields=['name']),
         ]
 
     def __str__(self):
@@ -31,12 +39,12 @@ class Publisher(models.Model):
 
 class Book(models.Model):
     class Languages(models.TextChoices):
-        ENGLISH = 'en', 'English'
-        RUSSIAN = 'ru', 'Russian'
-        FRENCH = 'fr', 'French',
-        SPANISH = 'es', 'Spanish',
-        GERMAN = 'de', 'German',
-        ITALIAN = 'it', 'Italian'
+        ENGLISH = 'English', 'en'
+        RUSSIAN = 'Russian', 'ru'
+        FRENCH = 'French', 'fr'
+        SPANISH = 'Spanish', 'es'
+        GERMAN = 'German', 'de'
+        ITALIAN = 'Italian', 'it'
 
     class Topics(models.TextChoices):
         BUSINESS = 'BUSINESS', 'Business'
@@ -444,10 +452,14 @@ class Book(models.Model):
         PDF = 'pdf', 'PDF'
         EPUB = 'epub', 'EPUB'
         DJVU = 'djvu', 'DJVU'
+        DOC = 'doc', 'DOC',
+        mobi = 'mobi', 'MOBI',
+        rar = 'rar', 'RAR',
+        zip = 'zip', 'ZIP'
+        azw3 = 'azw3', 'AZW3'
 
     libgen_id = models.IntegerField(unique=True, default=-1)
     title = models.CharField(max_length=2000)
-    slug = models.SlugField(max_length=2000, unique='identifier', null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     series = models.CharField(max_length=300, null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name='published_books')
@@ -457,14 +469,14 @@ class Book(models.Model):
                                   null=True, blank=True)
     pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
-    topic = models.CharField(max_length=100, choices=Topics.choices, default=Topics.OTHERS)
-    cover_url = models.CharField(max_length=300, null=True, blank=True)
+    topic = models.CharField(max_length=1000, default='Other')  # Choices removed
+    cover_url = models.URLField(null=True, blank=True)
     cover = models.ImageField(upload_to='covers', null=True, blank=True)
     identifier = models.CharField(max_length=300, blank=True)
     md5 = models.CharField(max_length=300, blank=True)
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
     extension = models.CharField(max_length=50, choices=Extensions.choices, default=Extensions.PDF)
-    download_url = models.CharField(max_length=1000, blank=True, null=True)
+    download_url = models.URLField(blank=True, null=True)
     file = models.FileField(blank=True, null=True)
     price = models.IntegerField(default=149000)
     discount = models.IntegerField(default=15)
@@ -485,11 +497,14 @@ class Book(models.Model):
         return self.title
 
     @property
+    def slug(self):
+        return slugify(f'{self.title} {self.publisher} {self.year}')
+
+    @property
     def after_price(self):
-        return self.price * (100 - self.discount) * 0.01
+        return int(self.price * (100 - self.discount) * 0.01)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
         if self.cover:
             cover_extension = self.cover.name.split('.')[-1]
             self.cover.name = f'{self.slug}.{cover_extension}'

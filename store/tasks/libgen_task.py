@@ -22,11 +22,11 @@ def _add_book(book: dict):
                                    year=book['year'],
                                    edition=book['edition'],
                                    publisher=publisher,
-                                   pages=book['pages'],
-                                   language='en',
+                                   pages=book['pages'] or None,
+                                   language=book['language'],
                                    filesize=book['filesize'],
                                    extension=book['extension'],
-                                   topic=book['topic'],
+                                   topic=book['topic'] or 'Other',
                                    identifier=book['identifier'],
                                    md5=book['md5'],
                                    description=book.get('description', ''),
@@ -38,7 +38,19 @@ def _add_book(book: dict):
         print('[+] Authors added!')
 
     except Exception as ex:
-        print(f'[-] {ex}')
+        print(f'[-] {ex}, data: {book}')
+
+
+def add_books_to_database_online(limit=5000, offset=0):
+    libgen_service = LibgenService()
+
+    for batch in libgen_service.read_book_from_mysql(limit=limit, offset=offset):
+        print('[+] Assign process started!')
+        libgen_service.assign_more_information_online(batch)
+        print('[+] Assigned successfully!')
+
+        with Pool() as pool:
+            pool.starmap(_add_book, [(book, ) for book in batch])
 
 
 def add_books_to_database(limit=5000, offset=0):

@@ -56,13 +56,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ['name', 'created']
+        fields = ['id', 'name', 'slug', 'created']
 
 
 class PublisherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publisher
-        fields = ['name', 'created']
+        fields = ['id', 'name', 'slug', 'created']
 
 
 class BookSerializer(serializers.ModelSerializer):
