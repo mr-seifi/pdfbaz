@@ -459,24 +459,24 @@ class Book(models.Model):
         azw3 = 'azw3', 'AZW3'
 
     libgen_id = models.IntegerField(unique=True, default=-1)
-    title = models.CharField(max_length=2000)
+    title = models.TextField()
     description = models.TextField(null=True, blank=True)
-    series = models.CharField(max_length=300, null=True, blank=True)
+    series = models.TextField(null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name='published_books')
     year = models.IntegerField(null=True, validators=[MinValueValidator(1800), MaxValueValidator(2100)], blank=True)
-    edition = models.CharField(max_length=100, blank=True)
+    edition = models.TextField(blank=True)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='published_books',
                                   null=True, blank=True)
     pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
-    topic = models.CharField(max_length=1000, default='Other')  # Choices removed
-    cover_url = models.URLField(null=True, blank=True)
+    topic = models.TextField(default='Other')  # Choices removed
+    cover_url = models.URLField(max_length=2000, null=True, blank=True)
     cover = models.ImageField(upload_to='covers', null=True, blank=True)
-    identifier = models.CharField(max_length=300, blank=True)
+    identifier = models.TextField(blank=True)
     md5 = models.CharField(max_length=300, blank=True)
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
     extension = models.CharField(max_length=50, choices=Extensions.choices, default=Extensions.PDF)
-    download_url = models.URLField(blank=True, null=True)
+    download_url = models.URLField(max_length=2000, blank=True, null=True)
     file = models.FileField(blank=True, null=True)
     price = models.IntegerField(default=149000)
     discount = models.IntegerField(default=15)
@@ -508,4 +508,6 @@ class Book(models.Model):
         if self.cover:
             cover_extension = self.cover.name.split('.')[-1]
             self.cover.name = f'{self.slug}.{cover_extension}'
+        if self.topic:
+            self.topic = slugify(self.topic.replace('\\', ' '))
         super(Book, self).save(*args, **kwargs)

@@ -44,16 +44,23 @@ class LibgenService:
         return book_batch
 
     def _add_description(self, book_batch: list) -> list:
-        md5_to_book_dict = {book['md5']: {key: book[key] for key in book} for book in book_batch}
+        md5_to_book_dict = {book['md5'].lower(): book for book in book_batch}
 
         cursor = self.conn.cursor()
         select_query = 'SELECT md5, descr FROM description ' \
                        'WHERE md5 IN ({})'.format(', '.join(f'"{word}"' for word in list(md5_to_book_dict)))
         cursor.execute(select_query)
-        data = cursor.fetchall()
 
-        for md5, descr in data:
-            md5_to_book_dict[md5]['description'] = descr
+        for md5, descr in cursor:
+            md5 = md5.lower()
+            descr = descr.decode() if isinstance(descr, bytes) else descr
+
+            try:
+                md5_to_book_dict[md5]['description'] = descr
+            except Exception as ex:
+                logging.exception(ex)
+                print(f'[-] Skipped {ex}')
+
         return [md5_to_book_dict[md5] for md5 in md5_to_book_dict]
 
     @staticmethod
