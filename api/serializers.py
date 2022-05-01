@@ -35,7 +35,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({'password': 'Password field didn\'t match.'})\
+            raise serializers.ValidationError({'password': 'Password field didn\'t match.'}) \
 
         return attrs
 
@@ -68,6 +68,7 @@ class PublisherSerializer(serializers.ModelSerializer):
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['id', 'title', 'slug', 'description', 'series', 'authors', 'year', 'edition', 'publisher',
-                  'pages', 'language', 'topic', 'cover', 'cover_url', 'identifier', 'md5', 'filesize', 'extension',
-                  'download_url', 'price', 'discount', 'after_price', 'created', 'updated']
+        fields = ['id', 'title', 'slug', 'description', 'series', 'authors', 'authors_name', 'year', 'edition',
+                  'publisher', 'publisher_name', 'pages', 'language', 'topic', 'cover', 'cover_url', 'identifier',
+                  'md5', 'filesize', 'extension', 'download_url', 'price', 'discount', 'after_price',
+                  'created', 'updated']

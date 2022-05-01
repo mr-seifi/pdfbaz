@@ -42,6 +42,6 @@ class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['year', 'language', 'topic']
-    search_fields = ['title', 'description', 'identifier', 'authors__name', 'publisher__name']
+    search_fields = ['title', 'description', 'identifier', 'publisher_name', 'authors_name']
     permission_classes = [IsAuthenticated]
 

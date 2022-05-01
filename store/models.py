@@ -480,6 +480,8 @@ class Book(models.Model):
     file = models.FileField(blank=True, null=True)
     price = models.IntegerField(default=149000)
     discount = models.IntegerField(default=15)
+    publisher_name = models.TextField(null=True, blank=True)
+    authors_name = models.TextField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -491,6 +493,10 @@ class Book(models.Model):
             models.Index(fields=['extension']),
             models.Index(fields=['cover']),
             models.Index(fields=['filesize']),
+            models.Index(fields=['authors_name']),
+            models.Index(fields=['publisher_name']),
+            models.Index(fields=['identifier']),
+            models.Index(fields=['identifier', 'authors_name', 'publisher_name']),
         ]
 
     def __str__(self):
@@ -503,6 +509,13 @@ class Book(models.Model):
     @property
     def after_price(self):
         return int(self.price * (100 - self.discount) * 0.01)
+
+    def add(self):  # TODO: Check prefetch queryset for performance
+        if self.publisher:
+            self.publisher_name = self.publisher.name
+        if self.authors.all():
+            self.authors_name = ", ".join([author.name for author in self.authors.all()])
+        self.save()
 
     def save(self, *args, **kwargs):
         if self.cover:
