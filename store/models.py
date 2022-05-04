@@ -1,6 +1,8 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 
 
 class Author(models.Model):
@@ -460,6 +462,7 @@ class Book(models.Model):
 
     libgen_id = models.IntegerField(unique=True, default=-1)
     title = models.TextField()
+    slug = models.SlugField(max_length=5000, blank=True)
     description = models.TextField(null=True, blank=True)
     series = models.TextField(null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name='published_books')
@@ -482,6 +485,7 @@ class Book(models.Model):
     discount = models.IntegerField(default=15)
     publisher_name = models.TextField(null=True, blank=True)
     authors_name = models.TextField(null=True, blank=True)
+    document = SearchVectorField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -489,33 +493,19 @@ class Book(models.Model):
         indexes = [
             models.Index(fields=['libgen_id']),
             models.Index(fields=['title']),
-            models.Index(fields=['language']),
-            models.Index(fields=['extension']),
-            models.Index(fields=['cover']),
-            models.Index(fields=['filesize']),
+            models.Index(fields=['slug']),
+            models.Index(fields=['identifier']),
             models.Index(fields=['authors_name']),
             models.Index(fields=['publisher_name']),
-            models.Index(fields=['identifier']),
-            models.Index(fields=['identifier', 'authors_name', 'publisher_name']),
+            GinIndex(fields=['document']),
         ]
 
     def __str__(self):
         return self.title
 
     @property
-    def slug(self):
-        return slugify(f'{self.title} {self.publisher} {self.year}')
-
-    @property
     def after_price(self):
         return int(self.price * (100 - self.discount) * 0.01)
-
-    def add(self):  # TODO: Check prefetch queryset for performance
-        if self.publisher:
-            self.publisher_name = self.publisher.name
-        if self.authors.all():
-            self.authors_name = ", ".join([author.name for author in self.authors.all()])
-        self.save()
 
     def save(self, *args, **kwargs):
         if self.cover:
@@ -523,4 +513,8 @@ class Book(models.Model):
             self.cover.name = f'{self.slug}.{cover_extension}'
         if self.topic:
             self.topic = slugify(self.topic.replace('\\', ' '))
+        if not self.slug:
+            self.slug = slugify(f'{self.title} {self.publisher} {self.year}')
+        self.publisher_name = kwargs.pop('publisher', '')
+        self.authors_name = kwargs.pop('authors', '')
         super(Book, self).save(*args, **kwargs)

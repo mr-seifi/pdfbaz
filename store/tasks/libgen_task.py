@@ -13,27 +13,28 @@ def _add_book(book: dict):
             print(f'[-] Passed: {book["id"]}')
             return
 
-        authors = libgen_service.split_authors(authors=book['authors'])
-        authors = [Author.objects.get_or_create(name=author) for author in authors]
+        authors_name = libgen_service.split_authors(authors=book['authors'])
+        authors = [Author.objects.get_or_create(name=author) for author in authors_name]
         authors = list(map(lambda x: x[0], authors))
         publisher, _ = Publisher.objects.get_or_create(name=book['publisher'])
 
-        book = Book.objects.create(libgen_id=book['id'],
-                                   title=book['title'],
-                                   series=book['series'],
-                                   year=book['year'],
-                                   edition=book['edition'],
-                                   publisher=publisher,
-                                   pages=book['pages'] or None,
-                                   language=book['language'],
-                                   filesize=book['filesize'],
-                                   extension=book['extension'],
-                                   topic=book['topic'] or 'Other',
-                                   identifier=book['identifier'],
-                                   md5=book['md5'],
-                                   description=book.get('description', ''),
-                                   download_url=book.get('link', ''),
-                                   cover_url=LibgenService.get_cover_url(book))
+        book = Book(libgen_id=book['id'],
+                    title=book['title'],
+                    series=book['series'],
+                    year=book['year'],
+                    edition=book['edition'],
+                    publisher=publisher,
+                    pages=book['pages'] or None,
+                    language=book['language'],
+                    filesize=book['filesize'],
+                    extension=book['extension'],
+                    topic=book['topic'] or 'Other',
+                    identifier=book['identifier'],
+                    md5=book['md5'],
+                    description=book.get('description', ''),
+                    download_url=book.get('link', ''),
+                    cover_url=LibgenService.get_cover_url(book))
+        book.save(publisher=publisher.name, authors=", ".join(authors_name))
         print(f'[+] Book {book.id} created!')
 
         [book.authors.add(author) for author in authors]
@@ -51,16 +52,15 @@ def add_books_to_database_online(limit=5000, offset=0):
         print('[+] Assigned successfully!')
 
         with Pool() as pool:
-            pool.starmap(_add_book, [(book, ) for book in batch])
+            pool.starmap(_add_book, [(book,) for book in batch])
 
 
 def add_books_to_database(limit=5000, offset=0):
     libgen_service = LibgenService()
 
     for batch in libgen_service.read_book_from_mysql(limit=limit, offset=offset):
-
         with Pool() as pool:
-            pool.starmap(_add_book, [(book, ) for book in batch])
+            pool.starmap(_add_book, [(book,) for book in batch])
         # for book in batch:
         #     _add_book(book)
         print('[+] Batch looped!')
