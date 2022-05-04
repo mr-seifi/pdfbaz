@@ -485,7 +485,7 @@ class Book(models.Model):
     discount = models.IntegerField(default=15)
     publisher_name = models.TextField(null=True, blank=True)
     authors_name = models.TextField(null=True, blank=True)
-    document = SearchVectorField(null=True)
+    document = SearchVectorField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -506,6 +506,13 @@ class Book(models.Model):
     @property
     def after_price(self):
         return int(self.price * (100 - self.discount) * 0.01)
+
+    def _do_insert(self, manager, using, fields, returning_fields, raw):
+        return super(Book, self)._do_insert(manager,
+                                            using,
+                                            [f for f in fields if f.attname != 'document'],
+                                            returning_fields,
+                                            raw)
 
     def save(self, *args, **kwargs):
         if self.cover:

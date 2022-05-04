@@ -1,5 +1,3 @@
-import psycopg2
-
 from store.models import Book, Author, Publisher
 from store.services.libgen_service import LibgenService
 from multiprocessing.pool import Pool
@@ -34,7 +32,6 @@ def _add_book(book: dict):
                     description=book.get('description', ''),
                     download_url=book.get('link', ''),
                     cover_url=LibgenService.get_cover_url(book))
-        print(book.__dict__)
         book.save(publisher=publisher.name, authors=", ".join(authors_name))
         print(f'[+] Book {book.id} created!')
 
