@@ -485,7 +485,7 @@ class Book(models.Model):
     discount = models.IntegerField(default=15)
     publisher_name = models.TextField(null=True, blank=True)
     authors_name = models.TextField(null=True, blank=True)
-    document = SearchVectorField(blank=True)
+    document = SearchVectorField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

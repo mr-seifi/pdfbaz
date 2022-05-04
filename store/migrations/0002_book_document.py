@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         setweight(to_tsvector('english', coalesce(authors_name,'')), 'C') ||
         setweight(to_tsvector('english', coalesce(publisher_name,'')), 'D') ||
         setweight(to_tsvector('english', coalesce(description,'')), 'E')
-      ) STORED;
+      ) STORED NULL;
     ''',
 
             reverse_sql='''
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 migrations.AddField(
                     model_name='book',
                     name='document',
-                    field=django.contrib.postgres.search.SearchVectorField(blank=True),
+                    field=django.contrib.postgres.search.SearchVectorField(null=True),
                 ),
             ]
         ),
