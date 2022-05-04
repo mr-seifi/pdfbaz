@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         setweight(to_tsvector('english', coalesce(authors_name,'')), 'C') ||
         setweight(to_tsvector('english', coalesce(publisher_name,'')), 'D') ||
         setweight(to_tsvector('english', coalesce(description,'')), 'E')
-      ) STORED NULL;
+      ) STORED;
     ''',
 
             reverse_sql='''
