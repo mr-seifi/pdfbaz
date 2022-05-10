@@ -470,7 +470,7 @@ class Book(models.Model):
     edition = models.TextField(blank=True)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='published_books',
                                   null=True, blank=True)
-    pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
+    pages = models.TextField(null=True, blank=True)
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
     topic = models.TextField(default='Other')  # Choices removed
     cover_url = models.URLField(max_length=2000, null=True, blank=True)
