@@ -474,7 +474,7 @@ class Book(models.Model):
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
     topic = models.TextField(default='Other')  # Choices removed
     cover_url = models.URLField(max_length=2000, null=True, blank=True)
-    cover = models.ImageField(upload_to='covers', null=True, blank=True)
+    cover = models.ImageField(max_length=5000, upload_to='covers', null=True, blank=True)
     identifier = models.TextField(blank=True)
     md5 = models.CharField(max_length=300, blank=True)
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
