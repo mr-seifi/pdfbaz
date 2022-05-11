@@ -466,7 +466,7 @@ class Book(models.Model):
     description = models.TextField(null=True, blank=True)
     series = models.TextField(null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name='published_books')
-    year = models.IntegerField(null=True, validators=[MinValueValidator(1800), MaxValueValidator(2100)], blank=True)
+    year = models.TextField(max_length=300, null=True, blank=True)
     edition = models.TextField(blank=True)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='published_books',
                                   null=True, blank=True)
