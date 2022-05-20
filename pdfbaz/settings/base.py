@@ -117,6 +117,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Redis
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
