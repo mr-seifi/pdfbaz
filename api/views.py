@@ -4,10 +4,11 @@ from rest_framework import generics, viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from django.contrib.postgres.search import SearchRank
 from store.models import Author, Publisher, Book
 from .serializers import AuthorSerializer, PublisherSerializer, BookSerializer, \
     MyTokenObtainPairSerializer, RegisterSerializer
+from django.db.models import F
 
 
 class MyObtainTokenPairView(TokenObtainPairView):
@@ -42,6 +43,12 @@ class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['year', 'language', 'topic']
-    search_fields = ['title', 'description', 'identifier', 'publisher_name', 'authors_name']
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        search_param = self.request.GET.get('search')
+        return Book.objects.filter(document=search_param)\
+            .annotate(rank=SearchRank(F('document'), search_param))\
+            .order_by('-rank') if search_param else Book.objects.all()
+
 

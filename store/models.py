@@ -3,6 +3,8 @@ from django.db import models
 from django.utils.text import slugify
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
+from django.core.files.base import ContentFile
+import requests
 
 
 class Author(models.Model):
@@ -474,7 +476,7 @@ class Book(models.Model):
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
     topic = models.TextField(default='Other')  # Choices removed
     cover_url = models.URLField(max_length=2000, null=True, blank=True)
-    cover = models.ImageField(upload_to='covers', null=True, blank=True)
+    cover = models.ImageField(upload_to='covers', max_length=5000, null=True, blank=True)
     identifier = models.TextField(blank=True)
     md5 = models.CharField(max_length=300, blank=True)
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
@@ -513,6 +515,18 @@ class Book(models.Model):
                                             [f for f in fields if f.attname != 'document'],
                                             returning_fields,
                                             raw)
+
+    def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
+        return super(Book, self)._do_update(base_qs,
+                                            using,
+                                            pk_val,
+                                            [value for value in values if value[0].name != 'document'],
+                                            update_fields,
+                                            forced_update)
+
+    def download_cover(self, session: requests.Session):
+        content = ContentFile(session.get(self.cover_url).content)
+        self.cover.save(name=f'{self.slug}.{self.cover_url.split(".")[-1]}', content=content, save=True)
 
     def save(self, *args, **kwargs):
         if self.cover:

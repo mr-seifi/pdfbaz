@@ -1,5 +1,7 @@
+import requests
 from store.models import Book, Author, Publisher
 from store.services.libgen_service import LibgenService
+from concurrent.futures import ThreadPoolExecutor
 from multiprocessing.pool import Pool
 
 
@@ -62,5 +64,28 @@ def add_books_to_database(limit=5000, offset=0):
         # for book in batch:
         #     _add_book(book)
         print('[+] Batch looped!')
+
+
+downloaded = 0
+all_covers = 0
+
+
+def _download_cover(session: requests.Session, book_id: int):
+    global downloaded, all_covers
+    Book.objects.get(pk=book_id).download_cover(session=session)
+    downloaded += 1
+    print(f'\rProcess: {100 * downloaded / all_covers:.2f}%', end='')
+
+
+def download_covers():
+    global all_covers
+    all_covers = Book.objects.filter(cover__exact='').count()
+    ids = Book.objects.filter(cover__exact='').values_list('id', flat=True)
+
+    with ThreadPoolExecutor() as executor:
+        with requests.Session() as session:
+            executor.map(_download_cover, [session] * all_covers, ids)
+            executor.shutdown(wait=True)
+
 
 # TODO: Each time update offset by last added book libgen_id in database (Make this automated)
