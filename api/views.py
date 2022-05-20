@@ -89,7 +89,11 @@ class RedirectBookFileViewSet(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        book = get_object_or_404(Book, pk=get_book_id(kwargs.get('book_hash')))
+        try:
+            book_id = get_book_id(kwargs.get('book_hash'))
+        except Exception as e:
+            return Response(status=400)
+        book = get_object_or_404(Book, pk=book_id)
         if not OrderBook.has_payment(user=request.user,
                                      book=book):
             return Response({'message': 'You don\'t have permissions to access this page!'}, status=403)
