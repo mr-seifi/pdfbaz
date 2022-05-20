@@ -482,7 +482,7 @@ class Book(models.Model):
     filesize = models.IntegerField(validators=[MinValueValidator(0)])
     extension = models.CharField(max_length=50, choices=Extensions.choices, default=Extensions.PDF)
     download_url = models.URLField(max_length=2000, blank=True, null=True)
-    file = models.FileField(blank=True, null=True)
+    file = models.FileField(upload_to='files', blank=True, null=True)
     price = models.IntegerField(default=149000)
     discount = models.IntegerField(default=15)
     publisher_name = models.TextField(null=True, blank=True)

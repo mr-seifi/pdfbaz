@@ -23,5 +23,6 @@ BOOK_TTL = 3600 * 24
 
 REDIS_KEYS = {
     'book_exist': f'{BOOK_PREFIX}'':{book_id}',
-    'book_url': f'{BOOK_PREFIX}'':{book_id}:url'
+    'book_url': f'{BOOK_PREFIX}'':{book_id}:url',
+    'hash_to_id': f'{BOOK_PREFIX}'':{book_hash}:hash',
 }

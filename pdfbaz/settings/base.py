@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'payment.apps.PaymentConfig',
     'provider.apps.ProviderConfig',
+    'linker.apps.LinkerConfig',
     'social_django',
     'corsheaders',
     'silk'

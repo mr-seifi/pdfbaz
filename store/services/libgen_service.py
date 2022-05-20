@@ -72,7 +72,7 @@ class LibgenService:
         try:
             url = f"http://31.42.184.140/main/" \
                   f"{book.get('cover_url', '').replace('-d', '').replace('-g', '').split('.')[-2]}/" \
-                  f"{slugify('{} {} {} {}'.format(book['title'], book['publisher'], book['year'], 'pdfbaz'))}" \
+                  f"{cls.get_book_identifier(book)}" \
                   f".{book['extension']}" \
                 if book.get('cover_url') and book.get('extension') and 'cover' not in book.get('cover_url') \
                 else ''
@@ -81,6 +81,10 @@ class LibgenService:
         except Exception as ex:
             logging.exception(ex)
             return ''
+
+    @classmethod
+    def get_book_identifier(cls, book: dict) -> str:
+        return slugify('{} {} {} {}'.format(book['title'], book['publisher_name'], book['year'], 'pdfbaz'))
 
     @staticmethod
     def split_authors(authors: str) -> list:

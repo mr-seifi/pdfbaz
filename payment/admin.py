@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import OrderBook
 
-# Register your models here.
+
+@admin.register(OrderBook)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order_token', 'customer', 'book', )
