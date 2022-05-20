@@ -17,6 +17,8 @@ from django.shortcuts import get_object_or_404
 from django.http import FileResponse
 from store.services.libgen_service import LibgenService
 from linker.tasks import get_book_id
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.openapi import Parameter
 
 
 class MyObtainTokenPairView(TokenObtainPairView):
@@ -61,8 +63,16 @@ class BookViewSet(viewsets.ModelViewSet):
 
 
 class DownloadBookViewSet(APIView):
-    # permission_classes = [IsAuthenticated]
+    """
+        Download a book via book_id<int> parameter
+    """
+    permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(manual_parameters=[Parameter(name='book_id',
+                                                      in_='path',
+                                                      description='Book identity document',
+                                                      required=True,
+                                                      type='int')])
     def get(self, request, *args, **kwargs):
         book = get_object_or_404(Book, pk=request.query_params.get('book_id'))
         if not OrderBook.has_payment(user=request.user,
@@ -73,6 +83,9 @@ class DownloadBookViewSet(APIView):
 
 
 class RedirectBookFileViewSet(APIView):
+    """
+        Redirect a book hash to real file
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
