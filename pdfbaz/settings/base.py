@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'rest_framework',
     'api.apps.ApiConfig',
+    'payment.apps.PaymentConfig',
+    'provider.apps.ProviderConfig',
     'social_django',
     'corsheaders',
     'silk'
