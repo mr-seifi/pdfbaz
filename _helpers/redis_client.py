@@ -13,3 +13,15 @@ class RedisClient:
             self.client = StrictRedis(host=REDIS_HOST,
                                       port=REDIS_PORT,
                                       db=0)
+
+
+# PREFIX
+BOOK_PREFIX = 'b'
+
+# EXPIRATIONS
+BOOK_TTL = 3600 * 24
+
+REDIS_KEYS = {
+    'book_exist': f'{BOOK_PREFIX}'':{book_id}',
+    'book_url': f'{BOOK_PREFIX}'':{book_id}:url'
+}

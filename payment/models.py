@@ -5,7 +5,6 @@ from store.models import Book
 
 
 class OrderBook(models.Model):
-
     order_id = models.UUIDField(default=uuid4)
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -14,5 +13,12 @@ class OrderBook(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['order_id']),
-            models.Index(fields=['customer']),
+            models.Index(fields=['customer', 'book']),
         ]
+
+    @classmethod
+    def has_payment(cls, user: User, book: Book):
+        orders = cls.objects.filter(customer=user,
+                                    book=book)
+
+        return (True, False)[not orders]
