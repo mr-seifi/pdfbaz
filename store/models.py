@@ -468,11 +468,11 @@ class Book(models.Model):
     description = models.TextField(null=True, blank=True)
     series = models.TextField(null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name='published_books')
-    year = models.IntegerField(null=True, validators=[MinValueValidator(1800), MaxValueValidator(2100)], blank=True)
+    year = models.TextField(max_length=300, blank=True, null=True)
     edition = models.TextField(blank=True)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='published_books',
                                   null=True, blank=True)
-    pages = models.IntegerField(null=True, validators=[MinValueValidator(0)])
+    pages = models.TextField(null=True, blank=True)
     language = models.CharField(max_length=50, choices=Languages.choices, default=Languages.ENGLISH)
     topic = models.TextField(default='Other')  # Choices removed
     cover_url = models.URLField(max_length=2000, null=True, blank=True)
