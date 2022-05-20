@@ -79,7 +79,7 @@ class DownloadBookViewSet(APIView):
                                      book=book):
             return Response({'message': 'You don\'t have permissions to access this page!'}, status=403)
 
-        return Response(f'http://127.0.0.1:8000/api/download/{generate_download_url(book=book)}/')
+        return Response(f'http://pdfbaz.com:3200/api/download/{generate_download_url(book=book)}/')
 
 
 class RedirectBookFileViewSet(APIView):
